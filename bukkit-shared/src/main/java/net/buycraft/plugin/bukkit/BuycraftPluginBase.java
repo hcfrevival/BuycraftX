@@ -131,13 +131,17 @@ public abstract class BuycraftPluginBase extends JavaPlugin {
         }
 
         if (configuration.isPushCommandsEnabled()) {
-            injector = new NettyInjector() {
-                @Override
-                protected void injectChannel(Channel channel) {
-                    channel.pipeline().addFirst(new Decoder(BuycraftPluginBase.this));
-                }
-            };
-            ((NettyInjector) injector).inject();
+            try {
+                injector = new NettyInjector() {
+                    @Override
+                    protected void injectChannel(Channel channel) {
+                        channel.pipeline().addFirst(new Decoder(BuycraftPluginBase.this));
+                    }
+                };
+                ((NettyInjector) injector).inject();
+            } catch (NoSuchMethodError e) {
+                getLogger().log(Level.SEVERE, "Can't use push commands", e);
+            }
         }
 
         // Initialize placeholders.
